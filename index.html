@@ -3,232 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>すいへーりーべー僕の船 - CHAOS EDITION</title>
+    
+    <!-- OGP Tags: SNSでシェアした時にぶっ飛んだ見た目にする設定 -->
+    <title>極・すいへーりーべー僕の船 | 記憶崩壊エディション</title>
+    <meta name="description" content="すいへーりーべー僕の船...その先の暗黒へ。君のブラウザで元素が爆発する。">
+    <meta property="og:title" content="極・すいへーりーべー僕の船 | 記憶崩壊エディション">
+    <meta property="og:description" content="義務教育の彼方からやってきた、物理演算を無視するカオス周期表。">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://example.com/chaos-elements">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1532094349884-543bc11b234d?auto=format&fit=crop&q=80&w=1000">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="極・すいへーりーべー僕の船 | 記憶崩壊エディション">
+    <meta name="twitter:description" content="元素が、僕の船が、止まらない。">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@900&display=swap');
+
+        :root {
+            --shake-intensity: 0px;
+        }
 
         body {
             background-color: #000;
             color: #fff;
-            font-family: 'M PLUS Rounded+ 1c', sans-serif;
+            font-family: 'M PLUS Rounded 1c', sans-serif;
             overflow-x: hidden;
             cursor: crosshair;
+            transition: background 0.5s;
+        }
+
+        .shake {
+            animation: global-shake 0.1s infinite;
+        }
+
+        @keyframes global-shake {
+            0% { transform: translate(var(--shake-intensity), var(--shake-intensity)); }
+            50% { transform: translate(calc(var(--shake-intensity) * -1), calc(var(--shake-intensity) * -1.2)); }
+            100% { transform: translate(var(--shake-intensity), 0); }
         }
 
         .element-card {
-            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            perspective: 1000px;
+            transition: all 0.1s ease-out;
+            user-select: none;
+            z-index: 10;
         }
 
         .element-card:hover {
-            transform: scale(1.5) rotate(10deg) zIndex(50);
-            filter: hue-rotate(90deg);
-        }
-
-        .chaos-mode .element-card {
-            animation: vibrate 0.1s infinite;
-        }
-
-        @keyframes vibrate {
-            0% { transform: translate(0,0); }
-            25% { transform: translate(2px, -2px); }
-            50% { transform: translate(-2px, 2px); }
-            75% { transform: translate(2px, 2px); }
-            100% { transform: translate(0,0); }
+            transform: scale(2.0) rotate(15deg);
+            z-index: 100;
+            box-shadow: 0 0 50px #fff;
         }
 
         .floating-text {
             position: absolute;
             pointer-events: none;
-            font-weight: bold;
-            z-index: 100;
-            white-space: nowrap;
+            font-weight: 900;
+            z-index: 200;
+            text-shadow: 2px 2px 0px #000;
         }
 
         .ship-container {
             position: fixed;
-            bottom: 20px;
-            right: -200px;
-            font-size: 4rem;
-            transition: right 5s linear;
+            bottom: -100px;
+            right: -300px;
+            font-size: 8rem;
+            transition: all 4s cubic-bezier(.17,.67,.83,.67);
+            filter: drop-shadow(0 0 30px #00ffff);
+            z-index: 150;
         }
 
-        .bg-gradient-chaos {
-            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff0000);
-            background-size: 400% 400%;
-            animation: gradientBG 5s ease infinite;
+        .hyper-chaos .element-card {
+            position: absolute !important;
+            animation: wander 10s infinite alternate linear;
         }
 
-        @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+        @keyframes wander {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            100% { transform: translate(calc(Math.random() * 80vw), calc(Math.random() * 80vh)) rotate(720deg); }
+        }
+
+        .explosion {
+            position: absolute;
+            border-radius: 50%;
+            background: radial-gradient(circle, #fff 0%, transparent 70%);
+            transform: scale(0);
+            animation: explode 0.5s ease-out forwards;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        @keyframes explode {
+            from { transform: scale(0); opacity: 1; }
+            to { transform: scale(10); opacity: 0; }
         }
     </style>
 </head>
-<body class="min-h-screen p-4">
+<body class="min-h-screen">
 
-    <!-- Header Section -->
-    <header class="text-center mb-10 pt-10">
-        <h1 id="main-title" class="text-6xl md:text-8xl font-black italic tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-red-500 animate-pulse">
-            すいへーりーべー<br>僕の船
-        </h1>
-        <p class="text-xl text-yellow-300">〜 義務教育の記憶を破壊するサイト 〜</p>
-        
-        <div class="mt-8 flex justify-center gap-4">
-            <button onclick="chaosMode()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full border-4 border-white shadow-[0_0_20px_rgba(255,0,0,0.8)] transition-all active:scale-95">
-                絶対におすな（カオス起動）
-            </button>
-            <button onclick="launchShip()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full border-4 border-white shadow-[0_0_20px_rgba(0,0,255,0.8)] transition-all">
-                僕の船を出す
-            </button>
-        </div>
-    </header>
+    <div id="app-wrapper" class="p-4 flex flex-col items-center">
+        <!-- Header -->
+        <header class="text-center mb-10 pt-20 relative">
+            <div id="glitch-title" class="text-5xl md:text-9xl font-black italic tracking-widest mb-4 bg-clip-text text-transparent bg-gradient-to-b from-white via-blue-500 to-purple-800 uppercase">
+                SUI-HEI-REEE!
+            </div>
+            <p id="sub-title" class="text-2xl text-cyan-400 font-bold tracking-widest animate-bounce">
+                記憶の向こう側へ、全速前進。
+            </p>
+            
+            <div class="mt-12 flex flex-wrap justify-center gap-6">
+                <button onclick="activateHyperChaos()" class="group relative px-10 py-5 font-black text-2xl bg-white text-black rounded-none border-8 border-double border-red-600 hover:bg-red-600 hover:text-white transition-all transform hover:skew-x-12">
+                    宇宙開闢（ビッグバン）
+                    <span class="absolute -top-4 -left-4 bg-red-600 text-white text-xs p-1">WARNING</span>
+                </button>
+                <button onclick="summonFullFleet()" class="px-10 py-5 font-black text-2xl bg-blue-900 text-cyan-300 rounded-full border-4 border-cyan-300 hover:shadow-[0_0_40px_#00ffff] transition-all">
+                    僕の船、一斉掃射
+                </button>
+            </div>
+        </header>
 
-    <!-- Periodic Table Grid -->
-    <main id="grid-container" class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-3 relative">
-        <!-- Elements will be generated here -->
-    </main>
+        <!-- The Table -->
+        <main id="grid-container" class="w-full max-w-7xl grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-4 mt-20">
+            <!-- JS will fill this -->
+        </main>
+    </div>
 
-    <!-- "Boku no Fune" -->
-    <div id="ship" class="ship-container">🚢💨 <span class="text-sm bg-black p-1">僕の船〜！！</span></div>
+    <!-- The Ships -->
+    <div id="ship-yard"></div>
 
-    <!-- Modals / Overlays -->
-    <div id="overlay" class="fixed inset-0 bg-white opacity-0 pointer-events-none z-[200] transition-opacity duration-100"></div>
+    <!-- Flash Overlay -->
+    <div id="flash" class="fixed inset-0 bg-white opacity-0 pointer-events-none z-[1000]"></div>
 
     <script>
         const elements = [
-            { symbol: 'H', name: '水素', mnemonic: 'すい', color: 'bg-blue-500' },
-            { symbol: 'He', name: 'ヘリウム', mnemonic: 'へー', color: 'bg-blue-400' },
-            { symbol: 'Li', name: 'リチウム', mnemonic: 'りー', color: 'bg-red-500' },
-            { symbol: 'Be', name: 'ベリリウム', mnemonic: 'べー', color: 'bg-red-400' },
-            { symbol: 'B', name: 'ホウ素', mnemonic: 'ぼ', color: 'bg-green-500' },
-            { symbol: 'C', name: '炭素', mnemonic: 'く', color: 'bg-gray-700' },
-            { symbol: 'N', name: '窒素', mnemonic: 'の', color: 'bg-blue-300' },
-            { symbol: 'O', name: '酸素', mnemonic: 'お', color: 'bg-red-600' },
-            { symbol: 'F', name: 'フッ素', mnemonic: 'ふ', color: 'bg-yellow-400' },
-            { symbol: 'Ne', name: 'ネオン', mnemonic: 'ね', color: 'bg-pink-500' },
-            { symbol: 'Na', name: 'ナトリウム', mnemonic: 'な', color: 'bg-orange-500' },
-            { symbol: 'Mg', name: 'マグネシウム', mnemonic: 'ま', color: 'bg-orange-400' },
-            { symbol: 'Al', name: 'アルミニウム', mnemonic: 'ある', color: 'bg-slate-400' },
-            { symbol: 'Si', name: 'ケイ素', mnemonic: 'しっぷ', color: 'bg-yellow-700' },
-            { symbol: 'P', name: 'リン', mnemonic: 'す', color: 'bg-red-800' },
-            { symbol: 'S', name: '硫黄', mnemonic: 'そ', color: 'bg-yellow-200' },
-            { symbol: 'Cl', name: '塩素', mnemonic: 'くら', color: 'bg-green-300' },
-            { symbol: 'Ar', name: 'アルゴン', mnemonic: 'あ', color: 'bg-cyan-500' },
-            { symbol: 'K', name: 'カリウム', mnemonic: 'か', color: 'bg-purple-500' },
-            { symbol: 'Ca', name: 'カルシウム', mnemonic: 'る', color: 'bg-purple-300' },
+            { s: 'H', m: 'すい', n: '水素', c: 'bg-blue-600' },
+            { s: 'He', m: 'へー', n: 'ヘリウム', c: 'bg-indigo-600' },
+            { s: 'Li', m: 'りー', n: 'リチウム', c: 'bg-red-600' },
+            { s: 'Be', m: 'べー', n: 'ベリリウム', c: 'bg-rose-600' },
+            { s: 'B', m: 'ぼ', n: 'ホウ素', c: 'bg-emerald-600' },
+            { s: 'C', m: 'く', n: '炭素', c: 'bg-zinc-800' },
+            { s: 'N', m: 'の', n: '窒素', c: 'bg-sky-600' },
+            { s: 'O', m: 'お', n: '酸素', c: 'bg-red-700' },
+            { s: 'F', m: 'ふ', n: 'フッ素', c: 'bg-yellow-500' },
+            { s: 'Ne', m: 'ね', n: 'ネオン', c: 'bg-pink-600' },
+            { s: 'Na', m: 'な', n: 'ナトリウム', c: 'bg-orange-600' },
+            { s: 'Mg', m: 'ま', n: 'マグネシウム', c: 'bg-amber-600' },
+            { s: 'Al', m: 'ある', n: 'アルミニウム', c: 'bg-slate-500' },
+            { s: 'Si', m: 'しっぷ', n: 'ケイ素', c: 'bg-amber-900' },
+            { s: 'P', m: 'す', n: 'リン', c: 'bg-red-900' },
+            { s: 'S', m: 'そ', n: '硫黄', c: 'bg-yellow-300 text-black' },
+            { s: 'Cl', m: 'くら', n: '塩素', c: 'bg-lime-500' },
+            { s: 'Ar', m: 'あ', n: 'アルゴン', c: 'bg-cyan-700' },
+            { s: 'K', m: 'か', n: 'カリウム', c: 'bg-purple-600' },
+            { s: 'Ca', m: 'る', n: 'カルシウム', c: 'bg-violet-800' },
         ];
 
         const container = document.getElementById('grid-container');
+        const flash = document.getElementById('flash');
 
-        // Generate Cards
-        elements.forEach((el, index) => {
-            const div = document.createElement('div');
-            div.className = `element-card ${el.color} p-4 rounded-lg flex flex-col items-center justify-center cursor-pointer shadow-lg border-2 border-white/20`;
-            div.innerHTML = `
-                <span class="text-xs opacity-70">No.${index + 1}</span>
-                <span class="text-3xl font-bold">${el.symbol}</span>
-                <span class="text-sm font-black mt-1">${el.mnemonic}</span>
-                <span class="text-[10px] mt-1">${el.name}</span>
+        elements.forEach((el, i) => {
+            const card = document.createElement('div');
+            card.className = `element-card ${el.c} h-32 flex flex-col items-center justify-center border-4 border-white/30 cursor-pointer relative overflow-hidden`;
+            card.innerHTML = `
+                <div class="absolute top-0 right-1 text-[10px] font-mono opacity-50">${i+1}</div>
+                <div class="text-4xl font-black">${el.s}</div>
+                <div class="text-lg font-bold">${el.m}</div>
+                <div class="text-[8px] mt-1 opacity-80 uppercase tracking-widest">${el.n}</div>
             `;
             
-            div.onclick = (e) => triggerElementEffect(e, el);
-            container.appendChild(div);
+            card.onclick = (e) => {
+                impact(e.clientX, e.clientY);
+                spawnText(e.clientX, e.clientY, el.m);
+                shakeScreen(15);
+            };
+
+            container.appendChild(card);
         });
 
-        function triggerElementEffect(e, el) {
-            // Flash effect
-            const overlay = document.getElementById('overlay');
-            overlay.style.opacity = '0.3';
-            setTimeout(() => overlay.style.opacity = '0', 100);
+        function impact(x, y) {
+            const exp = document.createElement('div');
+            exp.className = 'explosion';
+            exp.style.left = x + 'px';
+            exp.style.top = y + 'px';
+            document.body.appendChild(exp);
+            setTimeout(() => exp.remove(), 500);
 
-            // Floating Text
-            for(let i=0; i<5; i++) {
-                const text = document.createElement('div');
-                text.className = 'floating-text';
-                text.innerText = el.mnemonic.repeat(3);
-                text.style.left = e.clientX + 'px';
-                text.style.top = e.clientY + 'px';
-                text.style.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
-                text.style.fontSize = (Math.random() * 2 + 1) + 'rem';
-                document.body.appendChild(text);
-
-                const angle = Math.random() * Math.PI * 2;
-                const dist = 100 + Math.random() * 200;
-                
-                text.animate([
-                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
-                    { transform: `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) scale(0)`, opacity: 0 }
-                ], {
-                    duration: 1000,
-                    easing: 'ease-out'
-                }).onfinish = () => text.remove();
-            }
-
-            // Specific element quirks
-            if(el.symbol === 'He') {
-                document.body.style.transform = 'scale(0.9) rotate(2deg)';
-                setTimeout(() => document.body.style.transform = '', 500);
-            }
-            if(el.symbol === 'Na') {
-                // Sodium explosion simulation
-                document.body.classList.add('bg-orange-900');
-                setTimeout(() => document.body.classList.remove('bg-orange-900'), 200);
-            }
+            flash.style.opacity = '0.4';
+            setTimeout(() => flash.style.opacity = '0', 50);
         }
 
-        function launchShip() {
-            const ship = document.getElementById('ship');
-            ship.style.right = '120%';
+        function spawnText(x, y, txt) {
+            const words = ["DOOOM!", "KABOOM!", txt, "記憶滅却!", "限界突破!"];
+            const t = document.createElement('div');
+            t.className = 'floating-text text-white';
+            t.innerText = words[Math.floor(Math.random() * words.length)];
+            t.style.left = x + 'px';
+            t.style.top = y + 'px';
+            t.style.fontSize = (Math.random() * 3 + 2) + 'rem';
+            t.style.transform = `rotate(${(Math.random()-0.5)*60}deg)`;
+            document.body.appendChild(t);
+
+            t.animate([
+                { transform: 'translate(-50%, -50%) scale(0.5)', opacity: 1 },
+                { transform: `translate(${(Math.random()-0.5)*1000}px, ${(Math.random()-0.5)*1000}px) scale(3)`, opacity: 0 }
+            ], { duration: 1500, easing: 'ease-out' }).onfinish = () => t.remove();
+        }
+
+        function shakeScreen(amount) {
+            document.body.classList.add('shake');
+            document.documentElement.style.setProperty('--shake-intensity', `${amount}px`);
             setTimeout(() => {
-                ship.style.transition = 'none';
-                ship.style.right = '-200px';
-                setTimeout(() => {
-                    ship.style.transition = 'right 5s linear';
-                }, 100);
-            }, 5000);
+                if(!hyperMode) document.body.classList.remove('shake');
+            }, 200);
         }
 
-        let isChaos = false;
-        function chaosMode() {
-            isChaos = !isChaos;
-            const body = document.body;
-            const title = document.getElementById('main-title');
-            
-            if(isChaos) {
-                body.classList.add('chaos-mode', 'bg-gradient-chaos');
-                title.innerText = "SUI-HEI-REEEEEE!!!!";
-                
-                // Shake every element
-                setInterval(() => {
-                    if(!isChaos) return;
-                    const cards = document.querySelectorAll('.element-card');
-                    const randomCard = cards[Math.floor(Math.random() * cards.length)];
-                    randomCard.style.transform = `translate(${Math.random()*10}px, ${Math.random()*10}px) rotate(${Math.random()*360}deg)`;
-                }, 50);
+        function summonFullFleet() {
+            for(let i=0; i<15; i++) {
+                setTimeout(() => {
+                    const s = document.createElement('div');
+                    s.className = 'ship-container';
+                    s.innerHTML = `🚢<span class="text-2xl bg-white text-black p-2 font-black">${elements[Math.floor(Math.random()*elements.length)].m}号！</span>`;
+                    s.style.top = (Math.random() * 80) + 'vh';
+                    s.style.right = '-500px';
+                    document.getElementById('ship-yard').appendChild(s);
+                    
+                    setTimeout(() => {
+                        s.style.right = '150vw';
+                        s.style.transform = `rotate(${(Math.random()-0.5)*40}deg) scale(${Math.random()+1})`;
+                    }, 50);
 
-                // Crazy ship
-                setInterval(() => {
-                    if(isChaos) launchShip();
-                }, 3000);
-            } else {
-                location.reload(); // Restoring chaos is too hard, just refresh!
+                    setTimeout(() => s.remove(), 5000);
+                }, i * 200);
             }
         }
 
-        // Mouse follower effect
-        document.addEventListener('mousemove', (e) => {
-            if(!isChaos) return;
-            const trail = document.createElement('div');
-            trail.className = 'fixed w-4 h-4 bg-white rounded-full pointer-events-none z-[300]';
-            trail.style.left = e.clientX + 'px';
-            trail.style.top = e.clientY + 'px';
-            document.body.appendChild(trail);
-            trail.animate([{opacity: 1, scale: 1}, {opacity: 0, scale: 4}], {duration: 500}).onfinish = () => trail.remove();
-        });
+        let hyperMode = false;
+        function activateHyperChaos() {
+            hyperMode = true;
+            document.body.classList.add('shake');
+            document.documentElement.style.setProperty('--shake-intensity', '5px');
+            document.body.style.background = 'radial-gradient(circle, #200, #000, #002)';
+            document.getElementById('app-wrapper').classList.add('hyper-chaos');
+            document.getElementById('glitch-title').innerText = "SYSTEM ERROR: ELEMENT OVERLOAD";
+            
+            // Randomize card positions
+            const cards = document.querySelectorAll('.element-card');
+            cards.forEach(c => {
+                c.style.left = Math.random() * 80 + 'vw';
+                c.style.top = Math.random() * 80 + 'vh';
+                c.style.animationDelay = Math.random() * 5 + 's';
+                c.style.transition = 'all 10s linear';
+            });
 
+            setInterval(() => {
+                if(hyperMode) {
+                    impact(Math.random()*innerWidth, Math.random()*innerHeight);
+                    if(Math.random() > 0.8) summonFullFleet();
+                }
+            }, 800);
+        }
+
+        // Mouse Trail
+        document.addEventListener('mousemove', (e) => {
+            if(!hyperMode) return;
+            const dot = document.createElement('div');
+            dot.className = 'fixed w-2 h-2 bg-cyan-400 rounded-full pointer-events-none z-[500]';
+            dot.style.left = e.clientX + 'px';
+            dot.style.top = e.clientY + 'px';
+            document.body.appendChild(dot);
+            dot.animate([{opacity: 1}, {opacity: 0}], {duration: 300}).onfinish = () => dot.remove();
+        });
     </script>
 </body>
 </html>
