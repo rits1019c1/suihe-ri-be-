@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>すいへーりーべー僕の船 - CHAOS EDITION</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=M+PLUS+Rounded+1c:wght@700&display=swap');
+
+        body {
+            background-color: #000;
+            color: #fff;
+            font-family: 'M PLUS Rounded+ 1c', sans-serif;
+            overflow-x: hidden;
+            cursor: crosshair;
+        }
+
+        .element-card {
+            transition: all 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            perspective: 1000px;
+        }
+
+        .element-card:hover {
+            transform: scale(1.5) rotate(10deg) zIndex(50);
+            filter: hue-rotate(90deg);
+        }
+
+        .chaos-mode .element-card {
+            animation: vibrate 0.1s infinite;
+        }
+
+        @keyframes vibrate {
+            0% { transform: translate(0,0); }
+            25% { transform: translate(2px, -2px); }
+            50% { transform: translate(-2px, 2px); }
+            75% { transform: translate(2px, 2px); }
+            100% { transform: translate(0,0); }
+        }
+
+        .floating-text {
+            position: absolute;
+            pointer-events: none;
+            font-weight: bold;
+            z-index: 100;
+            white-space: nowrap;
+        }
+
+        .ship-container {
+            position: fixed;
+            bottom: 20px;
+            right: -200px;
+            font-size: 4rem;
+            transition: right 5s linear;
+        }
+
+        .bg-gradient-chaos {
+            background: linear-gradient(45deg, #ff00ff, #00ffff, #ffff00, #ff0000);
+            background-size: 400% 400%;
+            animation: gradientBG 5s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+    </style>
+</head>
+<body class="min-h-screen p-4">
+
+    <!-- Header Section -->
+    <header class="text-center mb-10 pt-10">
+        <h1 id="main-title" class="text-6xl md:text-8xl font-black italic tracking-tighter mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-red-500 animate-pulse">
+            すいへーりーべー<br>僕の船
+        </h1>
+        <p class="text-xl text-yellow-300">〜 義務教育の記憶を破壊するサイト 〜</p>
+        
+        <div class="mt-8 flex justify-center gap-4">
+            <button onclick="chaosMode()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full border-4 border-white shadow-[0_0_20px_rgba(255,0,0,0.8)] transition-all active:scale-95">
+                絶対におすな（カオス起動）
+            </button>
+            <button onclick="launchShip()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-full border-4 border-white shadow-[0_0_20px_rgba(0,0,255,0.8)] transition-all">
+                僕の船を出す
+            </button>
+        </div>
+    </header>
+
+    <!-- Periodic Table Grid -->
+    <main id="grid-container" class="max-w-6xl mx-auto grid grid-cols-2 md:grid-cols-5 lg:grid-cols-10 gap-3 relative">
+        <!-- Elements will be generated here -->
+    </main>
+
+    <!-- "Boku no Fune" -->
+    <div id="ship" class="ship-container">🚢💨 <span class="text-sm bg-black p-1">僕の船〜！！</span></div>
+
+    <!-- Modals / Overlays -->
+    <div id="overlay" class="fixed inset-0 bg-white opacity-0 pointer-events-none z-[200] transition-opacity duration-100"></div>
+
+    <script>
+        const elements = [
+            { symbol: 'H', name: '水素', mnemonic: 'すい', color: 'bg-blue-500' },
+            { symbol: 'He', name: 'ヘリウム', mnemonic: 'へー', color: 'bg-blue-400' },
+            { symbol: 'Li', name: 'リチウム', mnemonic: 'りー', color: 'bg-red-500' },
+            { symbol: 'Be', name: 'ベリリウム', mnemonic: 'べー', color: 'bg-red-400' },
+            { symbol: 'B', name: 'ホウ素', mnemonic: 'ぼ', color: 'bg-green-500' },
+            { symbol: 'C', name: '炭素', mnemonic: 'く', color: 'bg-gray-700' },
+            { symbol: 'N', name: '窒素', mnemonic: 'の', color: 'bg-blue-300' },
+            { symbol: 'O', name: '酸素', mnemonic: 'お', color: 'bg-red-600' },
+            { symbol: 'F', name: 'フッ素', mnemonic: 'ふ', color: 'bg-yellow-400' },
+            { symbol: 'Ne', name: 'ネオン', mnemonic: 'ね', color: 'bg-pink-500' },
+            { symbol: 'Na', name: 'ナトリウム', mnemonic: 'な', color: 'bg-orange-500' },
+            { symbol: 'Mg', name: 'マグネシウム', mnemonic: 'ま', color: 'bg-orange-400' },
+            { symbol: 'Al', name: 'アルミニウム', mnemonic: 'ある', color: 'bg-slate-400' },
+            { symbol: 'Si', name: 'ケイ素', mnemonic: 'しっぷ', color: 'bg-yellow-700' },
+            { symbol: 'P', name: 'リン', mnemonic: 'す', color: 'bg-red-800' },
+            { symbol: 'S', name: '硫黄', mnemonic: 'そ', color: 'bg-yellow-200' },
+            { symbol: 'Cl', name: '塩素', mnemonic: 'くら', color: 'bg-green-300' },
+            { symbol: 'Ar', name: 'アルゴン', mnemonic: 'あ', color: 'bg-cyan-500' },
+            { symbol: 'K', name: 'カリウム', mnemonic: 'か', color: 'bg-purple-500' },
+            { symbol: 'Ca', name: 'カルシウム', mnemonic: 'る', color: 'bg-purple-300' },
+        ];
+
+        const container = document.getElementById('grid-container');
+
+        // Generate Cards
+        elements.forEach((el, index) => {
+            const div = document.createElement('div');
+            div.className = `element-card ${el.color} p-4 rounded-lg flex flex-col items-center justify-center cursor-pointer shadow-lg border-2 border-white/20`;
+            div.innerHTML = `
+                <span class="text-xs opacity-70">No.${index + 1}</span>
+                <span class="text-3xl font-bold">${el.symbol}</span>
+                <span class="text-sm font-black mt-1">${el.mnemonic}</span>
+                <span class="text-[10px] mt-1">${el.name}</span>
+            `;
+            
+            div.onclick = (e) => triggerElementEffect(e, el);
+            container.appendChild(div);
+        });
+
+        function triggerElementEffect(e, el) {
+            // Flash effect
+            const overlay = document.getElementById('overlay');
+            overlay.style.opacity = '0.3';
+            setTimeout(() => overlay.style.opacity = '0', 100);
+
+            // Floating Text
+            for(let i=0; i<5; i++) {
+                const text = document.createElement('div');
+                text.className = 'floating-text';
+                text.innerText = el.mnemonic.repeat(3);
+                text.style.left = e.clientX + 'px';
+                text.style.top = e.clientY + 'px';
+                text.style.color = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                text.style.fontSize = (Math.random() * 2 + 1) + 'rem';
+                document.body.appendChild(text);
+
+                const angle = Math.random() * Math.PI * 2;
+                const dist = 100 + Math.random() * 200;
+                
+                text.animate([
+                    { transform: 'translate(0, 0) scale(1)', opacity: 1 },
+                    { transform: `translate(${Math.cos(angle) * dist}px, ${Math.sin(angle) * dist}px) scale(0)`, opacity: 0 }
+                ], {
+                    duration: 1000,
+                    easing: 'ease-out'
+                }).onfinish = () => text.remove();
+            }
+
+            // Specific element quirks
+            if(el.symbol === 'He') {
+                document.body.style.transform = 'scale(0.9) rotate(2deg)';
+                setTimeout(() => document.body.style.transform = '', 500);
+            }
+            if(el.symbol === 'Na') {
+                // Sodium explosion simulation
+                document.body.classList.add('bg-orange-900');
+                setTimeout(() => document.body.classList.remove('bg-orange-900'), 200);
+            }
+        }
+
+        function launchShip() {
+            const ship = document.getElementById('ship');
+            ship.style.right = '120%';
+            setTimeout(() => {
+                ship.style.transition = 'none';
+                ship.style.right = '-200px';
+                setTimeout(() => {
+                    ship.style.transition = 'right 5s linear';
+                }, 100);
+            }, 5000);
+        }
+
+        let isChaos = false;
+        function chaosMode() {
+            isChaos = !isChaos;
+            const body = document.body;
+            const title = document.getElementById('main-title');
+            
+            if(isChaos) {
+                body.classList.add('chaos-mode', 'bg-gradient-chaos');
+                title.innerText = "SUI-HEI-REEEEEE!!!!";
+                
+                // Shake every element
+                setInterval(() => {
+                    if(!isChaos) return;
+                    const cards = document.querySelectorAll('.element-card');
+                    const randomCard = cards[Math.floor(Math.random() * cards.length)];
+                    randomCard.style.transform = `translate(${Math.random()*10}px, ${Math.random()*10}px) rotate(${Math.random()*360}deg)`;
+                }, 50);
+
+                // Crazy ship
+                setInterval(() => {
+                    if(isChaos) launchShip();
+                }, 3000);
+            } else {
+                location.reload(); // Restoring chaos is too hard, just refresh!
+            }
+        }
+
+        // Mouse follower effect
+        document.addEventListener('mousemove', (e) => {
+            if(!isChaos) return;
+            const trail = document.createElement('div');
+            trail.className = 'fixed w-4 h-4 bg-white rounded-full pointer-events-none z-[300]';
+            trail.style.left = e.clientX + 'px';
+            trail.style.top = e.clientY + 'px';
+            document.body.appendChild(trail);
+            trail.animate([{opacity: 1, scale: 1}, {opacity: 0, scale: 4}], {duration: 500}).onfinish = () => trail.remove();
+        });
+
+    </script>
+</body>
+</html>
